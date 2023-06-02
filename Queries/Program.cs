@@ -52,7 +52,7 @@ internal partial class Program
                              join student in students! on g equals student.Gender into studentsGroupedByGender
                              // the addition part for check there is no match in the right side :
                              from matchedStudent in studentsGroupedByGender.DefaultIfEmpty(new Student { Name = "Undefined" })
-                              where matchedStudent.Grade >= 75
+                              where matchedStudent.Grade >= 75  
                               select new { Gender = g, Student = matchedStudent };
         malesAndFemales
             .ToList()

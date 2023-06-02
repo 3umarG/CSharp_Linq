@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using System.Text.RegularExpressions;
 
 //Console.WriteLine("Hello, World!");
 var fileContent = await File.ReadAllTextAsync("data.json");
@@ -116,9 +117,19 @@ cars
         <= 400 => "301 .. 400",
         _ => "401 .. 500"
     })
-    .Select(carG => new { HP = carG.Key, numberOfMakes = carG.Select(c => c.Make).Distinct().Count() })
+    .Select(group => new { 
+        HP = group.Key,
+        numberOfMakes = group.Where(car => car.Make.Length == 4).Select(car => car.Make).Distinct().Count(),
+        Makes = group.Where(car => car.Make.Length == 4).Select(car => car.Make).Distinct() })
     .ToList()
-    .ForEach(c => Console.WriteLine($"{c.HP} has {c.numberOfMakes}"));
+    .ForEach(c =>
+    {
+        Console.WriteLine($"{c.HP} has {c.numberOfMakes}");
+        foreach (var make in c.Makes)
+        {
+            Console.WriteLine($"-- {make}");
+        }
+    });
 #endregion
 
 
@@ -127,20 +138,77 @@ cars
 // Fluents Expression : () . () . () .....
 // the Query expression should start with from ... and end with select
 // if i want to select then use where I must : 
-// 1- Seperate the expressions 
+// 1- Seperate the expressions
 // 2- use into ===> mark the final result as new source , that enable me to restart the pipeline with the new source
+#endregion
 
 
-// There are 3 Types of Operators in LINQ :
+#region Types of Operators in LINQ :
 // 1- Sequence Operators : return output sequence          : Where , Select ..
 
-//       Where : return the same form of the elements ,but only with less number عدد اقل بس نفس الصورة 
-//       Select: return reformatted type of the elements "updated or new type" with the same number of elements.
+//       Where "Filteration Operator" : return the same form of the elements ,but only with less number عدد اقل بس نفس الصورة 
+//       Select "Transformation Operator " : return reformatted type of the elements "updated or new type" with the same number of elements.
 
 // 2- Element Operators "immidiate execution" not deffered : return single element عنصر واحد او صف واحد / First() , Last() , ...
-// 3- Aggregate Operators "immidiate execution"            : return single value قيمة واحدة من القيم الموجودة في العمود  / Max() , Min() , Count() , Avg() , Sum() 
+// 3- Aggregate Operators "immidiate execution" not deffered : return single value قيمة واحدة من القيم الموجودة في العمود  / Max() , Min() , Count() , Avg() , Sum() 
 //
 // I can combine using sub-queries by using element & aggregate operators both of them together
 // Aggregate ===> for finding the Max Value without any information about the element itself
 // then using element operators like First() , Last() to match the value given from Aggregate .
+
+// 4- Generator Operators : Generate Seq. of elements from nothing , Only called by using Enumerable.***
+//    example : Range(0,5) / Repeat() / ...
+//    
+
+// 5- Select Many : Transform Operator like Normal Select , but it returns output seq larger than input seq in length/count
+//var names = new List<string>() { "Omar Gomaa" , "Ahmed Ali" , "Mohammed Ahmed"};
+// I want this output : {Omar , Gomaa , ....}
+//var res = names.SelectMany(name => name.Split(" "));
+
+//6- Quantifiers Operator : return boolean based on condition
+// Any() , All() , ***.SequenceEqual(***)
+
+// 7- ZIP operator : compine 2 datasource sequneces to one sequence result.
+
+// /- Into / Let : Introducing new sequence to continue on it in Query Expression Only "Restart the input seq."
+// Let ===> intrduce new seq as variable and save the old variable if you want to use .
+// into ===> convert the seq. to new one and remove the old one , so you can't use it .
+
+var names = new List<string>()
+{
+    "Omar",
+    "Ali",
+    "Ziad",
+    "Momen",
+    "Mahmoud",
+    "Ahmed",
+    "Abdullah"
+};
+
+// Remove all Vowels from every name and then order them 
+
+// By using into
+
+/*
+var result = from name in names
+             select Regex.Replace(name, "[aeiouAEIOU]",String.Empty) 
+             into nameAfterRemoving // restart the seq. with the new names after removing vowels
+             where nameAfterRemoving.Length >= 3
+             select nameAfterRemoving;
+
+// By using let : introduce seq as new variable and use the old seq if you need
+result = from name in names
+         let nameAfterRemovingVowels = Regex.Replace(name, "[aeiouAEIOU]", String.Empty)
+         where nameAfterRemovingVowels.Length >= 3
+         // note : you can use the old name 
+         orderby nameAfterRemovingVowels ascending, name descending
+         select nameAfterRemovingVowels;
+
+
+foreach(var name in result)
+{
+    Console.WriteLine(name);
+}
+*/
 #endregion
+
