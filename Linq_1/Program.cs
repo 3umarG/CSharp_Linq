@@ -1,21 +1,23 @@
 ﻿using System.Text.Json;
-using System.Text.Json.Serialization;
 
 //Console.WriteLine("Hello, World!");
 var fileContent = await File.ReadAllTextAsync("data.json");
 var students = JsonSerializer.Deserialize<List<Student>>(fileContent);
-/*
-// All students that first name start with 'A' and their grade greater than 75
-students
-    .Where(s => s.FirstName.Contains("A"))
-    .ToList()
-    .ForEach(s => Console.WriteLine($"Student : {s.FirstName} {s.LastName} with Grade : {s.Grade}"));
+#region All students that first name start with 'A' and their grade greater than 75
+//students
+//    .Where(s => s.FirstName.Contains("A"))
+//    .ToList()
+//    .ForEach(s => Console.WriteLine($"Student : {s.FirstName} {s.LastName} with Grade : {s.Grade}"));
+#endregion
 
-// the Max Grade
-var highGrade = students.Max(s => s.Grade);
-Console.WriteLine($"The High Score is ${highGrade}");
 
-// Top 10 Students
+#region The Max Grade
+//var highGrade = students.Max(s => s.Grade);
+//var studentWithMaxGrade = students.FirstOrDefault(s => s.Grade == highGrade);
+//Console.WriteLine($"The High Score is ${highGrade}");
+#endregion
+
+#region Top 10 Students
 // Take : used for take the First n number of elements you entered .
 // Skip : the opposite of the Take , Skip n elements and take the items after that .
 students
@@ -23,21 +25,21 @@ students
     .Take(10)
     .ToList()
     .ForEach(s => Console.WriteLine($"{s.FirstName} {s.LastName} with Score : {s.Grade}"));
-*/
+#endregion
 
-var numberOFGenders = students.GroupBy(s => s.Gender).ToList().Count;
-// GroupBy ===> return GroupingItem has the Key of distinct value that i have determined
-//              and the value is all the objects of Student that match with this value
+#region GroupBy ===> return GroupingItem has the Key of distinct value that i have determined and the value is all the objects of Student that match with this value
 
 /*
+var numberOFGenders = students.GroupBy(s => s.Gender).ToList().Count;
 students
     .GroupBy(s => s.Gender)
     .ToList()
     .ForEach(s => Console.WriteLine(s.Key));
 Console.WriteLine(" ----------------------------- ");
 */
+#endregion
 
-// Get every key with number of values that take this Key
+#region Get every key with number of values that take this Key
 // Key : IEnumerable of Students 
 // (IEnumerable of Students).Count
 /*
@@ -57,17 +59,18 @@ students
 
 Console.WriteLine(" ----------------------------- ");
 */
-/*
-Console.WriteLine(students.GroupBy(s => s.Gender).Count());
-Console.WriteLine(numberOFGenders);
-*/
+#endregion
+
+//Console.WriteLine(students.GroupBy(s => s.Gender).Count());
+//Console.WriteLine(numberOFGenders);
+
 
 
 // More advanced Query with GroupBy
 var carsFile = await File.ReadAllTextAsync("cars.json");
 var cars = JsonSerializer.Deserialize<List<Car>>(carsFile);
 
-// 1- Display the number of models per make that appeared in 2011
+#region 1- Display the number of models per make that appeared in 2011
 /*
 cars
     .GroupBy(c => c.Make)
@@ -75,8 +78,9 @@ cars
     .ToList()
     .ForEach(c => Console.WriteLine($"Model : {c.Make} has number of : {c.numberOfModelsAppearedAfter}"));
 */
+#endregion
 
-// 2- Display a list of makes that have at least two models that appeared after 1995
+#region 2- Display a list of makes that have at least two models that appeared after 1995
 /*
 cars
     .Where(car => car.HP > 400)
@@ -86,8 +90,9 @@ cars
     .ToList()
     .ForEach(c => Console.WriteLine($"{c.Id} appeares : {c.numberOfModels} Times ."));
 */
+#endregion
 
-// 3- Display every Make with its average of HP
+#region 3- Display every Make with its average of HP
 /*
 cars
     .GroupBy(car => car.Make)
@@ -95,9 +100,10 @@ cars
     .ToList()
     .ForEach(car => Console.WriteLine($"The Make : {car.Make} has Average : {car.Avg} "));
 */
+#endregion
 
 
-// 4- How many Makes in each field of HP as : 0..100 / 101..200 / 201..300 / 301..400 / 401..500
+#region 4- How many Makes in each field of HP as : 0..100 / 101..200 / 201..300 / 301..400 / 401..500
 // The output ===> 0..100 : 55
 //                 101 ..200 : 5
 // Distinct make as GroupBy but the difference that it only returns IEnumerable of items not IGrouping .
@@ -110,51 +116,31 @@ cars
         <= 400 => "301 .. 400",
         _ => "401 .. 500"
     })
-    .Select(carG => new {HP = carG.Key , numberOfMakes = carG.Select(c => c.Make).Distinct().Count()})
+    .Select(carG => new { HP = carG.Key, numberOfMakes = carG.Select(c => c.Make).Distinct().Count() })
     .ToList()
     .ForEach(c => Console.WriteLine($"{c.HP} has {c.numberOfMakes}"));
-
-class Student
-{
-    [JsonPropertyName("id")]
-    public int Id { get; set; }
-
-    [JsonPropertyName("first_name")]
-    public string FirstName { get; set; }
-
-    [JsonPropertyName("last_name")]
-    public string LastName { get; set; }
-
-    [JsonPropertyName("email")]
-    public string Email { get; set; }
-
-    [JsonPropertyName("gender")]
-    public string Gender { get; set; }
-
-    [JsonPropertyName("grade")]
-    public int Grade { get; set; }
-
-}
+#endregion
 
 
-class Car
-{
-    [JsonPropertyName("id")]
-    public int ID { get; set; }
 
-    [JsonPropertyName("car_make")]
-    public string Make { get; set; }
+#region Hints for ITI Lectures
+// Fluents Expression : () . () . () .....
+// the Query expression should start with from ... and end with select
+// if i want to select then use where I must : 
+// 1- Seperate the expressions 
+// 2- use into ===> mark the final result as new source , that enable me to restart the pipeline with the new source
 
-    [JsonPropertyName("car_model")]
-    public string Model { get; set; }
 
-    [JsonPropertyName("car_year")]
-    public int Year { get; set; }
+// There are 3 Types of Operators in LINQ :
+// 1- Sequence Operators : return output sequence          : Where , Select ..
 
-    [JsonPropertyName("number_of_doors")]
-    public int Doors { get; set; }
+//       Where : return the same form of the elements ,but only with less number عدد اقل بس نفس الصورة 
+//       Select: return reformatted type of the elements "updated or new type" with the same number of elements.
 
-    [JsonPropertyName("hp")]
-    public int HP { get; set; }
-
-}
+// 2- Element Operators "immidiate execution" not deffered : return single element عنصر واحد او صف واحد / First() , Last() , ...
+// 3- Aggregate Operators "immidiate execution"            : return single value قيمة واحدة من القيم الموجودة في العمود  / Max() , Min() , Count() , Avg() , Sum() 
+//
+// I can combine using sub-queries by using element & aggregate operators both of them together
+// Aggregate ===> for finding the Max Value without any information about the element itself
+// then using element operators like First() , Last() to match the value given from Aggregate .
+#endregion

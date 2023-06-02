@@ -15,7 +15,7 @@ internal partial class Program
         teachers.ForEach(s => Console.WriteLine(s.City));
         */
 
-        // One to One :  Make a list that match and join the students with their teachers with same id
+        #region : One to One =>   Make a list that match and join the students with their teachers with same id
         /*
          var studentsWithTheirTeachers = from s in students
                                          join t in teachers! on s.ID equals t.ID
@@ -27,9 +27,10 @@ internal partial class Program
                      $"Student : {s.Student} has match with Teacher : {s.Teacher} in : {s.ID}");
          }
         */
+        #endregion
 
 
-        // Group Join -One to Many - : Group all males and females students
+        #region : Group Join -One to Many - : Group all males and females students
         /*
          var malesAndFemals = from g in new List<string> { "Male", "Female" }
                              join student in students! on g equals student.Gender into studentsGroupedByGender
@@ -41,9 +42,9 @@ internal partial class Program
             gender => Console.WriteLine($"Gender {gender.Gender} has {gender.Students.Count()}")
             );
         */
+        #endregion
 
-
-        // Left Outer Join : use DefaultIfEmpty()
+        #region : Left Outer Join : use DefaultIfEmpty()
         // Male : .....
         // Femal: .....
         // Undefined : "Any Empty Data" بحيث تكون بديلة لل null values as the Table 
@@ -51,13 +52,14 @@ internal partial class Program
                              join student in students! on g equals student.Gender into studentsGroupedByGender
                              // the addition part for check there is no match in the right side :
                              from matchedStudent in studentsGroupedByGender.DefaultIfEmpty(new Student { Name = "Undefined" })
-                             where matchedStudent.Grade >= 75
-                             select new { Gender = g, Student = matchedStudent };
+                              where matchedStudent.Grade >= 75
+                              select new { Gender = g, Student = matchedStudent };
         malesAndFemales
             .ToList()
             .ForEach(
             gender => Console.WriteLine($"{gender.Gender} has Student : {gender.Student.Name} with Score : {gender.Student.Grade}")
             );
+        #endregion
 
         Console.ReadLine();
     }
